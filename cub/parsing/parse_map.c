@@ -106,27 +106,32 @@ int is_map_surrounded(t_map *data)
 }
 int double_char(t_map *data)
 {
-	int i = 0, j;
-	int count = 0;
+    int i = 0, j;
+    int count = 0;
 
-	while (data->map[i])
-	{
-		j = 0;
-		while (data->map[i][j])
-		{
-			if (data->map[i][j] == 'N' || data->map[i][j] == 'S' ||
-				data->map[i][j] == 'E' || data->map[i][j] == 'W')
-				count++;
-			j++;
-		}
-		i++;
-	}
-	if (count != 1)
-	{
-		printf("Invalid number of direction characters (found %d, expected 1)\n", count);
-		return 0;
-	}
-	return 1;
+    while (i < data->map_height)
+    {
+        j = 0;
+        while (j < data->map_width)
+        {
+            char c = data->map[i][j];
+            if (c == 'N' || c == 'S' || c == 'E' || c == 'W')
+            {
+                if (count == 0) {
+                    data->player_x = j;
+                    data->player_y = i;
+                    data->player_dir = c;
+                    data->map[i][j] = '0';
+                }
+                count++;
+            }
+            j++;
+        }
+        i++;
+    }
+    if (count != 1)
+        return(write(1, "Invalid number of direction characters\n", 39), 0);
+    return 1;
 }
 
 t_map *get_data(char *s, t_map *data)
@@ -138,6 +143,9 @@ t_map *get_data(char *s, t_map *data)
 	data = malloc(sizeof(t_map));
 	if (!data)
 		return (perror("malloc failed"), NULL);
+	data->player_x = -1;
+    data->player_y = -1;
+    data->player_dir = '\0';
 
 	char **map_lines = get_map_lines(fd);
 	if (!map_lines)
@@ -145,16 +153,8 @@ t_map *get_data(char *s, t_map *data)
 
 	save_map_to_struct(data, map_lines);
 	free_tab(map_lines);
-	printf("Map size: %dx%d\n", data->map_width, data->map_height);
-	if (!is_map_surrounded(data))
-		printf("Map not closed by walls!\n");
-	else
-		printf("Map is valid.\n");
-	if(double_char(data) == 0)
-		{
-			printf("Invalid number of direction characters\n");
-			return (NULL);
-		}
+	if(double_char(data) == 0 || is_map_surrounded(data) == 0)
+			return (write(1, "Invalid map\n", 12), NULL);
 	return(data);
 }
 
