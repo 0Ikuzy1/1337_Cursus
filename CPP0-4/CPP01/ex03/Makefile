@@ -1,17 +1,15 @@
-NAME = BraiiiiiiinnnzzzZ
+NAME = Unnecessary_violence
 
 CXX = c++
-
 CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 
-SRC = Zombie.cpp newZombie.cpp randomChump.cpp main.cpp
-
+SRC = main.cpp Weapon.cpp HumanA.cpp HumanB.cpp
 OBJ = $(SRC:.cpp=.o)
 
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	$(CXX) $(CPPFLAGS) -o $(NAME) $(OBJ)
+	$(CXX) $(CXXFLAGS) -o $(NAME) $(OBJ)
 
 clean:
 	rm -rf $(OBJ)
